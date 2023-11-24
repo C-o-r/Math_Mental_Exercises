@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Exercises</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #timer {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        #exercises {
+            margin-bottom: 20px;
+        }
+
+        .exercise-container {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Math Exercises</h1>
+    <div id="timer">2 minutes 45 seconds remaining</div>
+    <div id="exercises"></div>
+    <button onclick="revealAnswers()">Go!</button>
+    <p id="score"></p>
+
+    <script>
+        let timeLeft = 165; // 2 minutes 45 seconds
+        let timer;
+
+        function generateRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateAdditionExercise() {
+            const operand1 = generateRandomNumber(10, 99);
+            const operand2 = generateRandomNumber(10, 99);
+            const result = operand1 + operand2;
+
+            return { question: `${operand1} + ${operand2} =`, answer: result };
+        }
+
+        function generateSubtractionExercise() {
+            const operand1 = generateRandomNumber(10, 99);
+            const operand2 = generateRandomNumber(10, operand1);
+            const result = operand1 - operand2;
+
+            return { question: `${operand1} - ${operand2} =`, answer: result };
+        }
+
+        function generateMultiplicationExercise() {
+            const operand1 = generateRandomNumber(2, 20);
+            const operand2 = generateRandomNumber(2, 20);
+            const result = operand1 * operand2;
+
+            return { question: `${operand1} * ${operand2} =`, answer: result };
+        }
+
+        function generateDivisionExercise() {
+            const divisor = generateRandomNumber(2, 9);
+            const result = generateRandomNumber(10, 99) * divisor;
+            const dividend = result;
+
+            return { question: `${dividend} / ${divisor} =`, answer: result };
+        }
+
+        function generateExercises(count) {
+            const exercisesContainer = document.getElementById('exercises');
+            exercisesContainer.innerHTML = '';
+
+            for (let i = 0; i < count; i++) {
+                let exercise;
+
+                if (i < 5) {
+                    exercise = generateAdditionExercise();
+                } else if (i < 10) {
+                    exercise = generateSubtractionExercise();
+                } else if (i < 15) {
+                    exercise = generateMultiplicationExercise();
+                } else {
+                    exercise = generateDivisionExercise();
+                }
+
+                const exerciseContainer = document.createElement('div');
+                exerciseContainer.classList.add('exercise-container');
+
+                const exerciseElement = document.createElement('p');
+                exerciseElement.textContent = exercise.question;
+
+                const answerInput = document.createElement('input');
+                answerInput.setAttribute('type', 'text');
+                answerInput.setAttribute('data-answer', exercise.answer); // Store the correct answer as a data attribute
+
+                exerciseContainer.appendChild(exerciseElement);
+                exerciseContainer.appendChild(answerInput);
+                exercisesContainer.appendChild(exerciseContainer);
+            }
+        }
+
+        function startTimer() {
+            timer = setInterval(function () {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timer').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds} remaining`;
+
+                if (timeLeft === 0) {
+                    clearInterval(timer);
+                    document.getElementById('timer').textContent = 'Time is up!';
+                    revealAnswers();
+                }
+            }, 1000);
+        }
+
+        function revealAnswers() {
+            clearInterval(timer);
+            const exercises = document.getElementById('exercises').querySelectorAll('.exercise-container');
+            let correctAnswers = 0;
+
+            exercises.forEach((exerciseContainer) => {
+                const answerInput = exerciseContainer.querySelector('input');
+                const correctAnswer = parseInt(answerInput.getAttribute('data-answer'));
+                const userAnswer = parseInt(answerInput.value);
+                
+                if (!isNaN(correctAnswer) && !isNaN(userAnswer) && userAnswer === correctAnswer) {
+                    correctAnswers++;
+                }
+            });
+
+            document.getElementById('score').textContent = `Your score: ${correctAnswers} out of ${exercises.length}`;
+        }
+
+        // Generate 30 random math exercises
+        generateExercises(30);
+
+        // Start the timer when the page loads
+        startTimer();
+    </script>
+</body>
+</html>
+
+
